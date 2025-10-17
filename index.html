@@ -7,8 +7,7 @@
     
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script> 
-    
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.0/aframe/build/aframe-ar.js"></script>    
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.1.0/dist/aframe-extras.min.js"></script>
     <script src="https://raw.githack.com/donmccurdy/aframe-motion-capture/master/dist/aframe-motion-capture.min.js"></script>
 
@@ -23,10 +22,10 @@
 
     <a-scene 
         vr-mode-ui="enabled: false;" 
-        renderer="antialias: true; precision: mediump;"
-        arjs='sourceType: webcam; detectionMode: mono_and_matrix; debugUIEnabled: false;'
-        arjs-hit-test
-    >
+    renderer="antialias: true; precision: mediump;"
+    arjs='sourceType: webcam; trackingMethod: best; debugUIEnabled: false;'
+    arjs-hit-test="enabled: true;"
+>
         
         <a-entity
             gltf-model="url(https://raw.githubusercontent.com/aframevr/aframe/master/examples/showcase/asset-on-asset/models/tree.glb)"
@@ -86,3 +85,4 @@
     </script>
 </body>
 </html>
+
