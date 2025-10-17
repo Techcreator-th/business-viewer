@@ -1,1 +1,75 @@
-Corrigindo nome do arquivo para index.html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador AR Simples</title>
+    
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe-haptics-component@1.0.3/dist/aframe-haptics-component.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script> 
+    
+    <style>
+        /* Estilo para garantir que o AR.js ocupe toda a tela */
+        body { margin: 0; overflow: hidden; }
+    </style>
+</head>
+
+<body style='margin : 0px; overflow: hidden;'>
+
+    <a-scene 
+        vr-mode-ui="enabled: false;" 
+        renderer="antialias: true; precision: mediump;"
+        arjs='sourceType: webcam; detectionMode: mono_and_matrix; debugUIEnabled: false;'
+        arjs-hit-test
+    >
+        
+        <a-entity
+            gltf-model="url(https://raw.githubusercontent.com/aframevr/aframe/master/examples/showcase/asset-on-asset/models/tree.glb)"
+            scale="0.5 0.5 0.5"
+            rotation="0 0 0"
+            position="0 0 0"
+            gesture-handler
+        >
+        </a-entity>
+        
+        <a-camera id="camera" position="0 0 0" arjs-original></a-camera>
+        
+        <a-entity light="type: ambient; intensity: 0.8;"></a-entity>
+        <a-entity light="type: directional; intensity: 0.6;" position="1 1 1"></a-entity>
+        
+        <div style="position: fixed; bottom: 10px; width: 100%; text-align: center; color: white; background-color: rgba(0,0,0,0.5); padding: 5px; z-index: 1000;">
+            Aponte a câmara para o chão/mesa e clique para colocar o objeto!
+        </div>
+        
+    </a-scene>
+
+    <script>
+        // Encontra a cena e o modelo 3D
+        const scene = document.querySelector('a-scene');
+        const model = document.querySelector('a-entity[gltf-model]');
+
+        // Ouve o evento de toque/clique na cena
+        scene.addEventListener('arjs-hit-test-result', (event) => {
+            if (event.detail.hit) {
+                // Se um plano foi detectado (hit-test), move o modelo para essa posição
+                const position = event.detail.position;
+                
+                // Atualiza a posição X, Y e Z do modelo
+                model.setAttribute('position', { 
+                    x: position.x, 
+                    y: position.y, 
+                    z: position.z 
+                });
+
+                // Torna o modelo visível e interativo
+                model.setAttribute('visible', true);
+            }
+        });
+        
+        // Inicialmente, esconde o modelo até que o usuário o posicione
+        model.setAttribute('visible', false);
+    </script>
+</body>
+</html>
