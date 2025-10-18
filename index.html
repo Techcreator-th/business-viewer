@@ -2,51 +2,107 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador AR Pro - Marker</title>
-    
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    
-    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.1.0/dist/aframe-extras.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Visualizador de Produto AR Nativo</title>
     
     <style>
-        body { margin: 0; overflow: hidden; }
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+        h1 { color: #333; margin-bottom: 20px; }
+        p { color: #666; margin-bottom: 30px; }
+        .ar-button {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background-color: #007bff; /* Cor azul moderna */
+            border-radius: 50px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+        .ar-button:hover { background-color: #0056b3; }
+        .note { 
+            margin-top: 25px; 
+            font-size: 0.9em; 
+            color: #999; 
+            border-top: 1px solid #eee; 
+            padding-top: 15px;
+        }
     </style>
 </head>
 
-<body style='margin : 0px; overflow: hidden;'>
+<body>
+    <div class="container">
+        <h1>Sofá Moderno (Visualização AR)</h1>
+        <p>Veja como este produto ficaria perfeitamente na sua casa. Clique abaixo e use a câmara do seu dispositivo!</p>
 
-    <a-scene 
-        vr-mode-ui="enabled: false;" 
-        renderer="antialias: true; precision: mediump;"
-        arjs='sourceType: webcam; trackingMethod: best; debugUIEnabled: false;'
-    >
-        
-        <a-marker preset="hiro">
-            
-            <a-entity
-                gltf-model="url(https://raw.githubusercontent.com/aframevr/aframe/master/examples/showcase/asset-on-asset/models/tree.glb)"
-                scale="0.5 0.5 0.5"
-                position="0 0 0.1" 
-                rotation="-90 0 0" 
-                gesture-handler
-                animation-mixer
-            >
-            </a-entity>
-            
-        </a-marker>
-        
-        <a-entity camera></a-entity>
-        
-        <a-entity light="type: ambient; intensity: 0.8;"></a-entity>
-        <a-entity light="type: directional; intensity: 0.6;" position="1 1 1"></a-entity>
-        
-        <div style="position: fixed; bottom: 10px; width: 100%; text-align: center; color: white; background-color: rgba(0,0,0,0.7); padding: 8px; z-index: 1000; font-family: sans-serif;">
-            APONTE A CÂMARA PARA O MARCADOR HIRO (Imprima ou use outro ecrã).
+        <a id="ar-link" class="ar-button" href="#" target="_blank">
+            Ver em Realidade Aumentada ✨
+        </a>
+
+        <div class="note">
+            ⚠️ O AR exige um telemóvel/celular moderno com suporte a ARCore ou ARKit e que o modelo 3D esteja no formato correto.
         </div>
+    </div>
+
+    <script>
+        const arLink = document.getElementById('ar-link');
         
-    </a-scene>
+        // ⚠️ IMPORTANTE: URL do seu modelo 3D no formato .usdz
+        // Este é um modelo público de uma cadeira. Substitua-o pelo seu sofá.
+        const usdzModelUrl = 'https://developer.apple.com/augmented-reality/quick-look/models/retrotv/tv_retro.usdz';
+
+        // ⚠️ IMPORTANTE: URL do seu modelo 3D no formato .glb
+        // Este é o link que abre o Scene Viewer do Google. Substitua o link do modelo.
+        const sceneViewerUrl = 'https://arvr.google.com/scene-viewer/1.0?mode=ar_only&sound=absent&title=Sofá%20Moderno&resizable=false&source=web&file=[URL_DO_SEU_MODELO_GLB]';
+        
+        // Exemplo de GLB que funciona bem no Scene Viewer
+        const glbModelUrl = 'https://raw.githubusercontent.com/google/model-viewer/master/packages/model-viewer/dist/assets/retrotv.glb';
+        
+        // Constrói o link final do Scene Viewer para Android
+        const finalAndroidLink = sceneViewerUrl.replace('[URL_DO_SEU_MODELO_GLB]', encodeURIComponent(glbModelUrl));
+
+
+        // Lógica para detectar iOS ou Android e definir o link correto
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+        if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+            // Se for iOS, usa o Quick Look (USDZ)
+            arLink.setAttribute('href', usdzModelUrl);
+            arLink.setAttribute('rel', 'ar'); // Obrigatório para iOS Quick Look
+        } else if (/android/i.test(userAgent)) {
+            // Se for Android, usa o Google Scene Viewer (GLB)
+            arLink.setAttribute('href', finalAndroidLink);
+        } else {
+            // Para Desktop ou outros, apenas informa que o AR é para mobile
+            arLink.innerText = 'AR Dispinível apenas no Mobile';
+            arLink.style.backgroundColor = '#ccc';
+            arLink.style.cursor = 'not-allowed';
+        }
+
+        // Se o seu modelo 3D é o mesmo (e você tem o .usdz e o .glb),
+        // Certifique-se de que os URLs usdzModelUrl e glbModelUrl apontam para seus arquivos.
+
+    </script>
 </body>
 </html>
