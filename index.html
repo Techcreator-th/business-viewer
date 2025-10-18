@@ -3,18 +3,16 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualizador AR Pro - Gestos</title>
+    <title>Visualizador AR Pro - Marker</title>
     
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
     
-<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.0/aframe/build/aframe-ar.js"></script>    
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.1.0/dist/aframe-extras.min.js"></script>
-    <script src="https://raw.githack.com/donmccurdy/aframe-motion-capture/master/dist/aframe-motion-capture.min.js"></script>
-
+    
     <style>
         body { margin: 0; overflow: hidden; }
-        /* Esconde o pequeno círculo de mira do hit-test, pois ele é confuso */
-        .a-hit-test-ring { display: none !important; }
     </style>
 </head>
 
@@ -22,67 +20,33 @@
 
     <a-scene 
         vr-mode-ui="enabled: false;" 
-    renderer="antialias: true; precision: mediump;"
-    arjs='sourceType: webcam; trackingMethod: best; debugUIEnabled: false;'
-    arjs-hit-test="enabled: true;"
->
+        renderer="antialias: true; precision: mediump;"
+        arjs='sourceType: webcam; trackingMethod: best; debugUIEnabled: false;'
+    >
         
-        <a-entity
-            gltf-model="url(https://raw.githubusercontent.com/aframevr/aframe/master/examples/showcase/asset-on-asset/models/tree.glb)"
-            scale="0.5 0.5 0.5"
-            rotation="0 0 0"
-            position="0 0 0"
-            manipulation-controls="movement: true; rotation: true; scale: true" 
-        >
-        </a-entity>
+        <a-marker preset="hiro">
+            
+            <a-entity
+                gltf-model="url(https://raw.githubusercontent.com/aframevr/aframe/master/examples/showcase/asset-on-asset/models/tree.glb)"
+                scale="0.5 0.5 0.5"
+                position="0 0 0.1" 
+                rotation="-90 0 0" 
+                gesture-handler
+                animation-mixer
+            >
+            </a-entity>
+            
+        </a-marker>
         
-        <a-camera id="camera" position="0 0 0" arjs-original></a-camera>
+        <a-entity camera></a-entity>
         
         <a-entity light="type: ambient; intensity: 0.8;"></a-entity>
         <a-entity light="type: directional; intensity: 0.6;" position="1 1 1"></a-entity>
         
-        <div id="instruction-message" style="position: fixed; bottom: 10px; width: 100%; text-align: center; color: white; background-color: rgba(0,0,0,0.7); padding: 8px; z-index: 1000; font-family: sans-serif;">
-            1. Aponte a câmara para uma superfície plana (chão ou mesa).<br> 
-            2. Toque na tela para posicionar o objeto.
+        <div style="position: fixed; bottom: 10px; width: 100%; text-align: center; color: white; background-color: rgba(0,0,0,0.7); padding: 8px; z-index: 1000; font-family: sans-serif;">
+            APONTE A CÂMARA PARA O MARCADOR HIRO (Imprima ou use outro ecrã).
         </div>
         
     </a-scene>
-
-    <script>
-        const scene = document.querySelector('a-scene');
-        const model = document.querySelector('a-entity[gltf-model]');
-        const instructionMessage = document.getElementById('instruction-message');
-
-        // Inicialmente, esconde o modelo
-        model.setAttribute('visible', false);
-        let isPlaced = false;
-
-        scene.addEventListener('arjs-hit-test-result', (event) => {
-            if (event.detail.hit && !isPlaced) {
-                // Posiciona o objeto apenas no primeiro toque
-                const position = event.detail.position;
-                
-                model.setAttribute('position', { 
-                    x: position.x, 
-                    y: position.y, 
-                    z: position.z 
-                });
-
-                model.setAttribute('visible', true);
-                isPlaced = true;
-                
-                // Mude a mensagem após o objeto ser posicionado
-                instructionMessage.innerHTML = '✨ Objeto Posicionado! Use 1 dedo para Mover, 2 dedos para Girar (Pinça) ou Redimensionar.';
-            }
-        });
-        
-        // Adiciona um listener para permitir que o usuário reposicione o objeto com 2 toques rápidos (double tap)
-        scene.addEventListener('dblclick', () => {
-            isPlaced = false;
-            model.setAttribute('visible', false);
-            instructionMessage.innerHTML = '1. Aponte a câmara para uma superfície plana (chão ou mesa).<br> 2. Toque na tela para reposicionar o objeto.';
-        });
-    </script>
 </body>
 </html>
-
